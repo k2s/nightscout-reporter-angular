@@ -77,10 +77,10 @@ test('daily graphic and statistics CLI under Node and Bun', {timeout: 180000}, a
     nsUrl: `http://127.0.0.1:${server.address().port}`, start: '2026-10-18', end: '2026-10-18',
     units: 'mmol/L', locale: 'de-DE', forms: ['daygraph', 'analysis'], output: join(temp, 'report.pdf')
   };
-  async function run(runtime, overrides = {}, env = {}, entry = cli) {
+  async function run(runtime, overrides = {}, env = {}, entry = cli, runtimeArgs = []) {
     const path = join(temp, `${randomBytes(6).toString('hex')}.json`);
     await writeFile(path, JSON.stringify({...job, ...overrides}));
-    return exec(runtime, [entry, path], {
+    return exec(runtime, [...runtimeArgs, entry, path], {
       cwd: root, timeout: 45000, env: {...process.env, TZ: 'Europe/Bratislava', NS_TOKEN: token, ...env}
     });
   }
@@ -159,5 +159,31 @@ test('daily graphic and statistics CLI under Node and Bun', {timeout: 180000}, a
     await assert.rejects(run('node', {output: link}), /regular file/);
     assert.deepEqual(await readFile(job.output), original);
     assert.equal(requests, before);
+  });
+  await t.test('crash before atomic rename preserves output; retry succeeds', async () => {
+    mode = 'ok';
+    const original = await readFile(job.output);
+    const preload = join(temp, 'crash-before-rename.mjs');
+    await writeFile(preload, `
+      import fs from 'node:fs';
+      import {syncBuiltinESMExports} from 'node:module';
+      const rename = fs.promises.rename;
+      fs.promises.rename = async (source, target) => {
+        if (source.endsWith('/report.pdf')) process.kill(process.pid, 'SIGKILL');
+        return rename(source, target);
+      };
+      syncBuiltinESMExports();
+    `);
+    await assert.rejects(run('node', {}, {}, cli, ['--import', preload]), error => {
+      assert.equal(error.signal, 'SIGKILL');
+      return true;
+    });
+    assert.deepEqual(await readFile(job.output), original);
+    const staged = (await readdir(temp)).filter(name => name.startsWith('.nightrep-'));
+    assert.equal(staged.length, 1);
+    // The crash occurred after streaming a complete PDF, before replacing output.
+    await verifyPdf(join(temp, staged[0], 'report.pdf'));
+    await run('node');
+    await verifyPdf(job.output);
   });
 });
