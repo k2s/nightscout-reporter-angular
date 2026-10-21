@@ -73,7 +73,7 @@ export class Settings {
   }
 
   static get hastiod(): boolean {
-    return localStorage.getItem(Settings.DebugFlag) !== Settings.DebugActive;
+    return typeof localStorage === 'undefined' || localStorage.getItem(Settings.DebugFlag) !== Settings.DebugActive;
   }
 
   static get msgThemeAuto(): string {
@@ -145,7 +145,7 @@ export class Settings {
   }
 
   get appTitle(): string {
-    return document.querySelector('head>title').innerHTML;
+    return typeof document === 'undefined' ? 'Nightscout Reporter' : document.querySelector('head>title').innerHTML;
   }
 
   _language: LangData;

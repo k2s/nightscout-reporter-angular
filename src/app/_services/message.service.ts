@@ -4,6 +4,7 @@ import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Observable, of} from 'rxjs';
 import {DialogComponent} from '@/components/dialog/dialog.component';
 import {ComponentType} from '@angular/cdk/overlay';
+import {SettingsComponent} from '@/components/settings/settings.component';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,10 @@ import {ComponentType} from '@angular/cdk/overlay';
 export class MessageService {
 
   private dlgRef: MatDialogRef<any>;
+
+  showSettings(): void {
+    this.showPopup(SettingsComponent, '', {});
+  }
 
   constructor(private dialog: MatDialog) {
   }

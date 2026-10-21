@@ -1,6 +1,6 @@
 import {BasePrint} from '@/forms/base-print';
 import {ParamInfo} from '@/_model/param-info';
-import {PdfService} from '@/_services/pdf.service';
+import type {PdfImages} from '@/_model/pdf-document';
 import {BaseDaily} from './base-daily';
 import {PrintCGP} from './print-cgp';
 import {Utils} from '@/classes/utils';
@@ -166,7 +166,7 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.`;
   showNoteDuration: boolean;
   hasNoteDuration: boolean;
 
-  constructor(ps: PdfService, suffix: string = null) {
+  constructor(ps: PdfImages, suffix: string = null) {
     super(ps);
     this.init(suffix);
   }

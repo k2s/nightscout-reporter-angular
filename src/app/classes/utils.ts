@@ -458,7 +458,7 @@ export class Utils {
   static async sha1(src: string) {
     const encoder = new TextEncoder();
     let bytes = encoder.encode(src);
-    const digest = await window.crypto.subtle.digest('SHA-1', bytes);
+    const digest = await globalThis.crypto.subtle.digest('SHA-1', bytes);
     const decoded = String.fromCharCode(...new Uint8Array(digest));
     bytes = Uint8Array.from([...decoded].map(ch => ch.charCodeAt(0)));
     let ret = '';

@@ -32,6 +32,51 @@ Initial steps to compile, deploy, and run nightscout reporter on your own infras
 
 You can run your own nightscout-reporter instance by calling the URL of your web-server in a browser.
 
+### Headless PDF generation (Node.js or Bun)
+
+Daily graphics (`daygraph`) and statistics (`analysis`) can also be generated without a browser. The CLI uses the same Nightscout loader, forms, page collection and preprocessing as the web app. Other forms are rejected.
+
+Install dependencies with Node.js 22.12 or newer (`npm install`; if npm reports conflicting Angular peer versions, use `npm install --legacy-peer-deps`). Bun 1.4 can run the generated bundle too. Save a job as `job.json`:
+
+```json
+{
+  "nsUrl": "https://your-nightscout.example",
+  "start": "2026-10-18",
+  "end": "2026-10-18",
+  "units": "mmol/L",
+  "locale": "en-GB",
+  "forms": ["daygraph", "analysis"],
+  "output": "report.pdf"
+}
+```
+
+Set `NS_TOKEN` in the environment when Nightscout requires authentication. Credentials are accepted only from this variable and sent as a Bearer authorization header; never put them in the job or URL. Public Nightscout servers can omit it.
+
+```sh
+npm run headless -- job.json
+# Or, with Bun installed:
+bun run headless:bun -- job.json
+
+# Build once, then execute directly with either runtime:
+npm run build:headless
+node dist/headless/cli.mjs job.json
+bun dist/headless/cli.mjs job.json
+```
+
+Dates are inclusive local calendar dates (`YYYY-MM-DD`), at most 31 days apart. Set `TZ`, for example `TZ=Europe/Bratislava`, to select the calendar timezone. Glucose units must be `mg/dL` or `mmol/L`. Locale codes match the web app (`de-DE`, `en-GB`, `en-US`, `sk-SK`, etc.); default is `de-DE`. Both forms are selected by default. Daily graphics use a fixed glucose preset without extra basal/analysis pages; statistics still use profile basal data. One day with both forms produces two pages.
+
+Run from the source checkout with dependencies installed; the bundle reads images and fonts from `src/assets`. Output paths are relative to the current directory. The output directory must exist and contain no symlinks. Each successful job atomically replaces its output; validation, authentication, download and rendering failures exit nonzero and preserve an existing file. Requests time out after 15 seconds, redirects are rejected, and interactive warnings fail the job. The CLI prints a JSON summary on success.
+
+`npm run test:headless` runs synthetic 288-reading/day fixtures through both Node and Bun and checks PDFs using Poppler's `pdfinfo` and `pdftotext` (install Poppler separately). Tests cover both units, translations, missing DOM globals, validation, authentication, partial data, concurrent writes and output preservation. No patient data or saved credentials are used.
+
+```sh
+npm run test:headless
+npm test -- --watch=false --browsers=ChromeHeadless
+npx ng build
+```
+
+For environments where Angular's persistent LMDB cache is unavailable, `CI=true` disables its local cache for builds and tests.
+
 ### IIS Hosting
 
 #### Web.config

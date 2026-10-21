@@ -1,7 +1,7 @@
 import {BasePrint} from '@/forms/base-print';
 import {PageData} from '@/_model/page-data';
 import {ParamInfo} from '@/_model/param-info';
-import {PdfService} from '@/_services/pdf.service';
+import type {PdfImages} from '@/_model/pdf-document';
 import {GLOBALS} from '@/_model/globals-data';
 import {ProfileGlucData} from '@/_model/nightscout/profile-gluc-data';
 import {ProfileStoreData} from '@/_model/nightscout/profile-store-data';
@@ -52,7 +52,7 @@ export class PrintAnalysis extends BasePrint {
     new ParamInfo(7, PrintAnalysis.msgParam7, {boolValue: true}),
   ];
 
-  constructor(ps: PdfService, suffix: string = null) {
+  constructor(ps: PdfImages, suffix: string = null) {
     super(ps);
     this.init(suffix);
   }
