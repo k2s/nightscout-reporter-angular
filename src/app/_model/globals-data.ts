@@ -58,7 +58,11 @@ export class PdfWarnings {
 export let GLOBALS: GlobalsData;
 
 export class GlobalsData extends Settings {
-  static _globals: GlobalsData = new GlobalsData();
+  private static instance: GlobalsData;
+
+  static get _globals(): GlobalsData {
+    return this.instance ??= new GlobalsData();
+  }
   emojiMaxRetries = 5;
   emojiRetries = this.emojiMaxRetries;
   msgFixAAPS30 = $localize`Die Erstellung der PDFs kann extrem lange dauern. Das liegt an einer Flut von Profil-Switches, die
@@ -107,8 +111,8 @@ export class GlobalsData extends Settings {
   ppSkipSensorChange = 0;
   ppUseEmojiImages = true;
   isCreatingPDF = false;
-  isDebug = localStorage.getItem('forceDebug') === 'true';
-  isBeta = window.location.href.indexOf('/beta/') >= 0;
+  isDebug = typeof localStorage !== 'undefined' && localStorage.getItem('forceDebug') === 'true';
+  isBeta = typeof window !== 'undefined' && window.location.href.indexOf('/beta/') >= 0;
   createTestData = false;
   basalPrecisionAuto = 1;
   ppBasalPrecisionIdx = 0;
@@ -362,10 +366,10 @@ export class GlobalsData extends Settings {
   }
 
   get runsLocal(): boolean {
-    return window.location.href.indexOf('/localhost:') >= 0;
+    return typeof window !== 'undefined' && window.location.href.indexOf('/localhost:') >= 0;
   }
 
-  _isLocal = window.location.href.indexOf('/localhost:') >= 0;
+  _isLocal = this.runsLocal;
 
   get isLocal(): boolean {
     return this._isLocal;
@@ -768,7 +772,7 @@ export class GlobalsData extends Settings {
   }
 
   msgUrlFailure(url: string): any {
-    if (url.startsWith('http:') && window.location.protocol.startsWith('https')) {
+    if (url.startsWith('http:') && typeof window !== 'undefined' && window.location.protocol.startsWith('https')) {
       return {msg: this.msgUrlNotSafe};
     }
 

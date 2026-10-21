@@ -26,7 +26,6 @@ import {DayData} from '@/_model/nightscout/day-data';
 import {ListData} from '@/_model/nightscout/list-data';
 import {StatisticData} from '@/_model/nightscout/statistic-data';
 import {Settings} from '@/_model/settings';
-import {SettingsComponent} from '@/components/settings/settings.component';
 import {A1CData} from '@/_model/a1c-data';
 
 @Injectable({
@@ -951,7 +950,7 @@ schlechten Internetverbindung.`);
       }
       this.ms.showDialog(type, `${Utils.join(info, '<br>')}`, false, params).subscribe(result => {
         if (result?.btn === 'settings') {
-          this.ms.showPopup(SettingsComponent, '', {});
+          this.ms.showSettings();
         }
       });
     }

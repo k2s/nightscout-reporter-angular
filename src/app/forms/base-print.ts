@@ -8,7 +8,7 @@ import {ReportData} from '@/_model/report-data';
 import {DayData} from '@/_model/nightscout/day-data';
 import {GridData} from '@/_model/grid-data';
 import {LegendData} from '@/_model/legend-data';
-import {PdfService} from '@/_services/pdf.service';
+import type {PdfImages} from '@/_model/pdf-document';
 import {map, Observable} from 'rxjs';
 import {Settings} from '@/_model/settings';
 import emojiRegex from 'emoji-regex';
@@ -152,7 +152,7 @@ export abstract class BasePrint extends FormConfig {
   collectedImages: string[] = [];
   emojiReplacements: any = {};
 
-  protected constructor(public ps: PdfService) {
+  protected constructor(public ps: PdfImages) {
     super(null, false);
     this.form = this;
   }

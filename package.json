@@ -2,6 +2,11 @@
   "name": "nightscout-reporter",
   "version": "4.4.6",
   "scripts": {
+    "headless": "node src/headless/run.mjs",
+    "headless:bun": "bun src/headless/run.mjs",
+    "build:headless": "node src/headless/build.mjs",
+    "test:headless": "node --test src/headless/headless.test.mjs",
+    "test": "ng test",
     "ng": "ng",
     "start": "ng serve --port 3002 --open",
     "start-demo": "ng serve --configuration demo --port 3003 --open",
@@ -52,14 +57,20 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
+    "esbuild": "^0.25.0",
     "@angular/build": "^20.0.1",
     "@angular/cli": "^20.0.1",
     "@angular/compiler-cli": "^20.0.1",
     "@angular/localize": "^20.0.1",
     "@types/file-saver": "^2.0.5",
     "@types/jasmine": "~4.3.0",
-    "@types/node": "^12.11.1",
+    "@types/node": "^22.0.0",
     "jasmine-core": "~4.5.0",
+    "karma": "^6.4.4",
+    "karma-chrome-launcher": "^3.2.0",
+    "karma-coverage": "^2.2.1",
+    "karma-jasmine": "^5.1.0",
+    "karma-jasmine-html-reporter": "^2.1.0",
     "npm-build-zip": "^1.0.3",
     "pdfmake-font-generator": "^1.0.1",
     "typescript": "~5.8.3"

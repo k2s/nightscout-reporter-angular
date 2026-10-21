@@ -1,7 +1,7 @@
 import {BasePrint} from '@/forms/base-print';
 import {PageData} from '@/_model/page-data';
 import {ParamInfo} from '@/_model/param-info';
-import {PdfService} from '@/_services/pdf.service';
+import type {PdfImages} from '@/_model/pdf-document';
 import {GLOBALS, GlobalsData} from '@/_model/globals-data';
 import {Utils} from '@/classes/utils';
 import {DayData} from '@/_model/nightscout/day-data';
@@ -48,7 +48,7 @@ Diese Grafik kann auch bei @05@ und @08@ ausgegeben werden.`;
   override _isPortrait = true;
   showAreaLines: boolean;
 
-  constructor(ps: PdfService, suffix: string = null) {
+  constructor(ps: PdfImages, suffix: string = null) {
     super(ps);
     this.footerTextAboveLine = {x: 0, y: 1.2, fs: 8, text: this.msgSource};
     this.init(suffix);
